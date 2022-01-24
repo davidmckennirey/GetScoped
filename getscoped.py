@@ -20,10 +20,7 @@ def check_in_scope(ip_addr: str, scope: List) -> bool:
 def dump_to_file(hosts: List, filename: str):
     with open(filename, "w") as f:
         for host in hosts:
-            ip_list = host.get('a', [])
-            if ip_list:
-                for ip in ip_list:
-                    f.write(f"{host.get('host')} [{ip}]\n")
+            f.write(f"{host.get('host')} [{host.get('ip')}]\n")
 
 def cli() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -66,9 +63,15 @@ def main():
         if ip_list:
             for ip in ip_list:
                 if check_in_scope(ip, scope):
-                    in_scope.append(host) 
+                    in_scope.append({
+                        "host": host.get('host'),
+                        "ip": ip
+                    }) 
                 else:
-                    out_of_scope.append(host)
+                    out_of_scope.append({
+                        "host": host.get('host'),
+                        "ip": ip
+                    })
     pinfo(f"Successfully checked scope, dumping to output files: {args.output_in} and {args.output_out}")
 
     # output scope files
